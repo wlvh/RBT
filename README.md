@@ -1,7 +1,7 @@
 # RBT 
 
 # Backtesting Library based on NumPy and Numba
-[中文](#中文)
+[中文](##中文)
 ---
 
 ## English
