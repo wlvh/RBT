@@ -62,7 +62,7 @@ nohup python3 -u test.py > trading_output.log 2>&1 &
 
 ### Note
 
-This library is currently made public for backtesting purposes only, as strategies built upon it have already proven to be profitable.
+This library is currently made public with backtesting parts only, as strategies built upon it have already proven to be profitable.
 
 ---
 
