@@ -34,7 +34,48 @@ This library is currently made public for backtesting purposes only, as strategi
   
 - **状态保存**: 当前仓位、成本基础（用于止损）以及最高利润（用于止盈）等信息可以无缝转移到下一个策略期间。这确保了连续性，并且对于涉及对冲、规模调整或其他复杂操作的策略至关重要。
 
-### 注意事项
+### 操作步骤
 
+#### 策略启动之后每交易周期执行：
+##### 1，执行trading_data_pipeline.py，将比特币数据更新到最新一天（东0区），并检查和填充空缺数据（币安交易所停机时间没有比特币数据，这些数据不填充），检查数据格式，检查是否有重复数据（少量不影响）。
+##### 2，直接执行allocata.sh脚本，将优化周期改为5，这样就可以更新过去9天的策略的apply周期。（nohup ./allocate.sh > allocate_output.log 2>&1 &）
+##### 2，执行calculate_divisible_dates.py，确认更新日期
+##### 3，从opt_date_to_the_latest_date复制日期，去除逗号，将其输入并执行allocata.sh脚本，将指定日期，target，time period的交易策略进行优化。（nohup ./allocate.sh > allocate_output.log 2>&1 &）
+##### 3，执行check_test_intergret.py,将所有的json文件整合在一起，并检查计算的交易策略是否有遗漏（云计算平台有逐出特性）。输出为processed_errors.json。
+##### 4，执行fill_process_opt_gap.sh,读取processed_errors.json,调用rolling.py将空缺的交易策略进行补全。(nohup ./fill_process_opt_gap.sh > output_fill.txt 2>&1 &)
+##### 5，执行check_test_intergret.py,将所有的json文件整合在一起，并检查计算的交易策略是否有遗漏（云计算平台有逐出特性）。输出为processed_errors.json。
+##### 6，执行process_opt_for_model.py 将字典进行切分。并且添加参数平滑集。
+##### 7，执行Using_rolling_strategy.sh，更新select_model的参数。
+记得更新脚本的日期 \
+nohup ./Using_rolling_strategy.sh > Using_rolling_strategy.log 2>&1 &
+##### 8.2 寻找最优lambda_1和socrethreshold
+nohup /usr/bin/python3 /home/WLH_trade/0615/trading/rolling_select_strategy_model.py 2>&1 | tee -a logfile.log &
+
+##### 7，执行apply_selected_para.py，输出2个json文件：max_target_dict_list, apply_json_values_list
+###### 前12小时：交易数据更新，策略优化参数更新。（end_date日期为当前日期-6天）激进和中庸需要，保守不需要，因为保守时间跨度足够长。
+策略优化参数更新大概需要45*200，9000秒-3小时。
+###### 前9小时，交易数据更新，策略优化参数更新，选择策略模型根据前12小时的策略优化参数结果开始更新（end_date日期为当前日期-6天）
+###### 前3小时，交易数据更新，策略优化参数更新，选择策略模型根据前9小时的策略优化参数结果开始更新（end_date日期为当前日期-6天）
+###### 前1小时，交易数据更新，策略优化参数更新，选择策略模型根据前3小时的策略优化参数结果开始更新（end_date日期为当前日期-6天）
+###### 前0小时，交易数据更新，策略优化参数更新，选择策略模型根据前1小时的策略优化参数结果开始更新（end_date日期为当前日期-6天），交易策略根据前1小时的选择策略模型上线。
+
+#### 实盘阶段
+nohup python3 -u test.py > trading_output.log 2>&1 &
+
+#### 数据库资料：
+##### 1，无外部信息，加入norm和L2正则化
+    cur_study_name = f'ModelSelect-study-2023-10-23_norm_{rolling_len}-{date}-lambda_1{lambda_1}'
+    old_study_name = f'ModelSelect-study-2023-10-23_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}'
+    db_name = f"rolling_select_strategy_model-2023-10-23_norm_{rolling_len}-lambda_1{lambda_1}.db"
+##### 2，无外部信息，加入L2正则化
+    cur_study_name = f'ModelSelect-study-2023-10-19_norm_{rolling_len}-{date}-lambda_1{lambda_1}'
+    old_study_name = f'ModelSelect-study-2023-10-19_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}'
+    db_name = f"rolling_select_strategy_model-2023-10-19_{rolling_len}-lambda_1{lambda_1}.db"
+##### 3, 有外部信息，加入norm和L2正则化。外部信息是带入L2正则化一起优化。外部信息的lambda目前设置为和L2正则化一样。
+    cur_study_name = f'ModelSelect-study-2023-10-28_norm_{rolling_len}-{date}-lambda_1{lambda_1}_PCA'
+    old_study_name = f'ModelSelect-study-2023-10-28_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}_PCA'
+    db_name = f"rolling_select_strategy_model-2023-10-28_norm_{rolling_len}-lambda_1{lambda_1}_PCA.db"
+
+### 注意事项
 由于基于该库构建的策略已经证明是盈利的，因此目前仅公开回测库。
 
