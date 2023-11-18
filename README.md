@@ -1,7 +1,7 @@
 # RBT 
 
 # Backtesting Library based on NumPy and Numba
-[中文](#中文)
+[中文](#chinese-section)
 ---
 
 ## English
@@ -67,7 +67,7 @@ This library is currently made public with backtesting parts only, as strategies
 ---
 
 ## 中文
-
+<a name="chinese-section"></a>
 ### 简介
 
 该仓库包含一个基于 `NumPy` 和 `Numba` 的回测库。该库旨在提供一个高效且多功能的环境，用于交易策略的模拟和评估。
