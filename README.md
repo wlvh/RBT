@@ -16,6 +16,50 @@ This repository houses a backtesting library that is built on top of `NumPy` and
   
 - **State Preservation**: Information such as current positions, cost basis (for stop-loss), and peak profits (for take-profit) can be seamlessly transferred to the subsequent strategy period. This ensures continuity and can be vital for strategies that involve hedging, scaling, or other complex operations.
 
+### Operational Steps
+Post-Strategy Launch: Actions to be Performed Each Trading Cycle:
+#### 1. Run trading_data_pipeline.py to update Bitcoin data to the latest day (UTC+0), check and fill in missing data (do not fill data for periods when Binance exchange is down), verify data format, and check for duplicate data (minor amounts are acceptable).
+#### 2. Directly execute the allocata.sh script, changing the optimization cycle to 5, to update the past 9 days of strategy apply cycles. (nohup ./allocate.sh > allocate_output.log 2>&1 &)
+#### 3. Run calculate_divisible_dates.py to confirm update dates.
+#### 4. Copy dates from opt_date_to_the_latest_date, remove commas, input them, and execute the allocata.sh script to optimize the trading strategy for specified dates, targets, and time periods. (nohup ./allocate.sh > allocate_output.log 2>&1 &)
+#### 5. Execute check_test_intergret.py to integrate all JSON files and check for any missing trading strategies (due to the evicting nature of cloud computing platforms). Output: processed_errors.json.
+#### 6. Run fill_process_opt_gap.sh, read processed_errors.json, and use rolling.py to fill in any gaps in the trading strategies. (nohup ./fill_process_opt_gap.sh > output_fill.txt 2>&1 &)
+#### 7. Execute check_test_intergret.py again to check for any omissions after running fill_process_opt_gap.sh.
+#### 8. Run process_opt_for_model.py to split the dictionary and add smoothing sets.
+#### 9. Execute Using_rolling_strategy.sh to update parameters for the select_model. Remember to update the script's date. \
+nohup ./Using_rolling_strategy.sh > Using_rolling_strategy.log 2>&1 &
+
+#### 10 Find the optimal lambda_1 and scorethreshold.
+nohup /usr/bin/python3 /home/WLH_trade/0615/trading/rolling_select_strategy_model.py 2>&1 | tee -a logfile.log &
+
+#### 11. Execute apply_selected_para.py, outputting two JSON files: max_target_dict_list, apply_json_values_list.
+12 hours before: Update trading data and strategy optimization parameters. (end_date is 6 days before the current date). Aggressive and moderate strategies need this update, conservative ones do not, due to their longer time span.
+
+9 hours before: Update trading data and strategy optimization parameters, start updating the strategy selection model based on the results of the past 12 hours' strategy optimization parameters (end_date is 6 days before the current date).
+
+3 hours before: Update trading data and strategy optimization parameters, start updating the strategy selection model based on the results of the past 9 hours' strategy optimization parameters (end_date is 6 days before the current date).
+
+1 hour before: Update trading data and strategy optimization parameters, start updating the strategy selection model based on the results of the past 3 hours' strategy optimization parameters (end_date is 6 days before the current date).
+
+At hour 0: Update trading data and strategy optimization parameters, start updating the strategy selection model based on the results of the past 1 hour's strategy optimization parameters (end_date is 6 days before the current date), and launch the trading strategy based on the strategy selection model of the past 1 hour.
+
+#### 12. Live Trading Phase
+nohup python3 -u test.py > trading_output.log 2>&1 &
+
+#### 13. Database Information:
+##### 1. Without external information, add norm and L2 regularization.
+    cur_study_name = f'ModelSelect-study-2023-10-23_norm_{rolling_len}-{date}-lambda_1{lambda_1}'
+    old_study_name = f'ModelSelect-study-2023-10-23_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}'
+    db_name = f"rolling_select_strategy_model-2023-10-23_norm_{rolling_len}-lambda_1{lambda_1}.db"
+##### 2. Without external information, add L2 regularization.
+    cur_study_name = f'ModelSelect-study-2023-10-19_norm_{rolling_len}-{date}-lambda_1{lambda_1}'
+    old_study_name = f'ModelSelect-study-2023-10-19_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}'
+    db_name = f"rolling_select_strategy_model-2023-10-19_{rolling_len}-lambda_1{lambda_1}.db"
+##### 3. With external information, add norm and L2 regularization. External information is integrated into L2 regularization optimization. The lambda for external information is currently set the same as for L2 regularization.
+    cur_study_name = f'ModelSelect-study-2023-10-28_norm_{rolling_len}-{date}-lambda_1{lambda_1}_PCA'
+    old_study_name = f'ModelSelect-study-2023-10-28_norm_{rolling_len}-{old_date}-lambda_1{lambda_1}_PCA'
+    db_name = f"rolling_select_strategy_model-2023-10-28_norm_{rolling_len}-lambda_1{lambda_1}_PCA.db"
+
 ### Note
 
 This library is currently made public for backtesting purposes only, as strategies built upon it have already proven to be profitable.
