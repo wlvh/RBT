@@ -65,9 +65,8 @@ nohup python3 -u test.py > trading_output.log 2>&1 &
 This library is currently made public with backtesting parts only, as strategies built upon it have already proven to be profitable.
 
 ---
-
-## 中文
 <a name="chinese-section"></a>
+## 中文
 ### 简介
 
 该仓库包含一个基于 `NumPy` 和 `Numba` 的回测库。该库旨在提供一个高效且多功能的环境，用于交易策略的模拟和评估。
