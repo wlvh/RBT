@@ -1,4 +1,4 @@
-# RBT 
+# RBT - Rolling Backtest Trade
 
 # Backtesting Library based on NumPy and Numba
 [中文](#chinese-section)
