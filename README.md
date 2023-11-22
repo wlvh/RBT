@@ -3,7 +3,7 @@
 # Backtesting Library based on NumPy and Numba
 [中文](#chinese-section)
 ---
-<img width="2608" alt="RBT解密版" src="https://github.com/wlvh/RBT/assets/30534800/0de5fe2a-0742-4dbe-ade4-ae2253a6e4b9">
+<img width="3737" alt="QuantitativeTradingModel discolse" src="https://github.com/wlvh/RBT/assets/30534800/ce5a40fb-9d13-4da1-8ec8-75728e8c9b66">
 
 ## English
 
@@ -69,6 +69,7 @@ This library is currently made public with backtesting parts only, as strategies
 <a name="chinese-section"></a>
 ## 中文
 ### 简介
+<img width="2608" alt="RBT解密版" src="https://github.com/wlvh/RBT/assets/30534800/0de5fe2a-0742-4dbe-ade4-ae2253a6e4b9">
 
 该仓库包含一个基于 `NumPy` 和 `Numba` 的回测库。该库旨在提供一个高效且多功能的环境，用于交易策略的模拟和评估。
 
