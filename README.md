@@ -3,6 +3,7 @@
 # Backtesting Library based on NumPy and Numba
 [中文](#chinese-section)
 ---
+<img width="2608" alt="RBT解密版" src="https://github.com/wlvh/RBT/assets/30534800/0de5fe2a-0742-4dbe-ade4-ae2253a6e4b9">
 
 ## English
 
