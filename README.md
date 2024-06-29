@@ -34,10 +34,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Commercial License
-
-Companies or organizations that wish to use this code for commercial purposes must obtain a commercial license. Please contact [your email] for more details.
-
 
 ### Commercial License
 
