@@ -101,18 +101,6 @@ def process_json_files(directory, output_file_path):
                     continue
                 # 检查并计算weighted_sqn_drawdown, weighted_drawdown_win_ratio, weighted_drawdown_win_ratio_value in apply_value
                 apply_opt = apply_value[target]['0']
-                #if 'weighted_sqn_drawdown' not in apply_opt:
-                #    apply_opt['weighted_sqn_drawdown'] = apply_opt['weighted_drawdown'] * apply_opt['sqn']
-                #if 'weighted_drawdown_win_ratio' not in apply_opt:
-                #    apply_opt['weighted_drawdown_win_ratio'] = apply_opt['weighted_drawdown'] * apply_opt['Win ratio']
-                #if 'weighted_drawdown_win_ratio_value' not in apply_opt:
-                #    apply_opt['weighted_drawdown_win_ratio_value'] = apply_opt['weighted_drawdown'] * apply_opt['win ratio value']
-                #if 'drawdown_win_ratio' not in apply_opt:
-                #    apply_opt['drawdown_win_ratio'] = (1+apply_opt['drawdown']) * apply_opt['Win ratio']
-                #if  'sqn_drawdown' not in apply_opt:
-                #    apply_opt['sqn_drawdown'] = apply_opt['sqn'] * (1+apply_opt['drawdown'])
-                #if 'drawdown_win_ratio_value' not in apply_opt:
-                #    apply_opt['drawdown_win_ratio_value'] = (1+apply_opt['drawdown']) * apply_opt['win ratio value']
 
                 new_dict[end_date][train_days][target][strategy_name]['apply'][days_diff] = apply_value
 
@@ -190,8 +178,6 @@ def check_missing_keys(json_path,config_path):
                             errors.append(f'Error, missing "{function}" key at: {date} -> {period} -> {target} -> {strategy_name}')
     
     return errors
-
-#errors = check_missing_keys('/Users/lyuhongwang/Downloads/2021_10_08_2023_05_28_opt')
 
 #处理错误信息，只提取date，period，target，返回一个list
 def process_errors(errors):
@@ -386,10 +372,6 @@ def get_data(apply_json, end_time, target, period,strategy_name):
                     wanted_data[time] = apply_json[time][pices]
     return wanted_data
 
-
-#end_time = "2023-10-02 00:00:00"
-#check = get_data(apply_data_para_path='apply_data.json_para', end_time = end_time, data_len=41, 
-#                 target='weighted_sqn_drawdown', period='45')
 
     
 int_list = ['sell_volume_window','buy_volume_window','sell_vwap_period','buy_vwap_period',

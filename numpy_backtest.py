@@ -149,7 +149,6 @@ def calculate_trades_win_rate_and_sqn_from_dict(numpy_arrays: dict, start_date: 
 # Note: To use this function, you need to pass the appropriate dictionary structure as the numpy_arrays argument.
 # The dictionary should contain 'datetime', 'position', and 'net_value' keys with associated numpy array values.
 
-
 def calculate_sma_numpy(arr, window):
     return np.convolve(arr, np.ones(window)/window, mode='valid')
 
@@ -302,8 +301,6 @@ def calculate_vwap_numpy(high, low, close, volume, span):
     vwap = ema_typical_price / ema_volume
     return vwap
 
-
-# load_data('BTCUSDT_1m.csv', '2023-08-23 00:00:00', 60)
 
 def calculate_atr(df, period=14):  # checked
     # 计算前一天的收盘价
@@ -717,14 +714,9 @@ class TradeLogic:
         if account_net_value <= 0:
             raise ValueError(
                 "Account net value is negative. Please check your account balance.")
-        # if signal != 'buy' and signal != 'sell':
-        #     print(f"signal is {signal}")
-        #     raise ValueError("Please input buy or sell for signal.")
         # 使用 getattr 动态获取策略方法，并传递参数字典。这种方式可以根据不同策略传递不同的参数，而不需要在函数内部写多个 if 判断。
         strategy_method = getattr(
             self, f"{self.strategy_name.lower()}_size_calculation", None)
-        # if strategy_method is None:
-        #     raise ValueError(f"Strategy {self.strategy_name} not supported")
         # 每种策略都有自己的计算方法，命名方式为 strategy_name_size_calculation。这使得每种策略的逻辑都被封装在各自的方法中。
         size = strategy_method(account_net_value=account_net_value,
                                last_close=last_close, volume=volume, index=index, signal=signal)
@@ -1053,7 +1045,6 @@ class TradeLogic:
                     self.hedge_logic.execute_hedge(signal='long', size=size)
             # 获取当前的 UTC 时间（东0区时间）
         self.calculate_net_value()
-        # return self.df.iloc[index]  # Returning the updated DataFrame
 
 
 def load_data(filepath, end_date, data_len):
@@ -1149,8 +1140,6 @@ def load_data_bydate(df, end_date, start_date, init_columns=None):
         # else:
         #     raise KeyError(f"Column '{column}' already exists in the DataFrame.")
     return filtered_df
-
-# load_data('BTCUSDT_1m.csv', '2023-08-23 00:00:00', 60)
 
 
 def calculate_sma_numpy_with_padding(arr, window):
@@ -1706,162 +1695,3 @@ def calculate_MACDindicators_by_date(start, end, arrays, short_period, long_peri
     print(f"Tech indicator calculation took {cost_time} seconds")
     return arrays
 
-
-if __name__ == "__main__":
-    data_all = load_data("BTCUSDT_1m.csv", '2023-08-29 00:00:00', 6)
-
-    start_time_total = time.time()
-    symbol = 'BTC/USDT'
-    last_action = 'free'
-    buy_price = None
-    sell_price = None
-    max_profit = 0
-    pre_my_position = 0
-
-    with open('/home/WLH_trade/0615/trading/best_strategy', 'r') as file:
-        best_strategy = json.load(file)
-
-    sell_volume_window = best_strategy['1']['sell_volume_window']
-    buy_volume_window = best_strategy['1']['buy_volume_window']
-    buy_volume_multiplier = best_strategy['1']['buy_volume_multiplier']
-    sell_volume_multiplier = best_strategy['1']['sell_volume_multiplier']
-    buy_stop_loss = best_strategy['1']['buy_stop_loss']
-    sell_stop_loss = best_strategy['1']['sell_stop_loss']
-    buy_take_profit = best_strategy['1']['buy_take_profit']
-    sell_take_profit = best_strategy['1']['sell_take_profit']
-    sell_vwap_period = best_strategy['1']['sell_vwap_period']
-    buy_vwap_period = best_strategy['1']['buy_vwap_period']
-    buy_risk_per_trade = best_strategy['1']['buy_risk_per_trade']
-    sell_risk_per_trade = best_strategy['1']['sell_risk_per_trade']
-    buy_atr_period = best_strategy['1']['buy_atr_period']
-    sell_atr_period = best_strategy['1']['sell_atr_period']
-    # buy_atr_sma_period = best_strategy['1']['buy_atr_sma_period']
-    # sell_atr_sma_period = best_strategy['1']['sell_atr_sma_period']
-    buy_atr_sma_period = 5
-    sell_atr_sma_period = 5
-    max_length = max(sell_volume_window, buy_volume_window, sell_vwap_period, buy_vwap_period,
-                     sell_atr_period, buy_atr_period, sell_atr_sma_period, buy_atr_sma_period) + 1
-    print(
-        f"now we used the best strategy: {best_strategy['0']}, and its parameters are: {best_strategy['1']}")
-    '''
-    # 1. 计算VWAP
-    data_all['buy_vwap'] = calculate_vwap(data_all, period=buy_vwap_period)
-    data_all['sell_vwap'] = calculate_vwap(data_all, period=sell_vwap_period)
-
-    # 2. 计算ATR
-    data_all['buy_atr'] = calculate_atr(data_all, period=buy_atr_period)
-    data_all['sell_atr'] = calculate_atr(data_all, period=sell_atr_period)
-
-    # 3. 计算ATR的SMA（Simple Moving Average）
-    data_all['buy_atr_sma'] = data_all['buy_atr'].rolling(window=buy_atr_sma_period ).mean()
-    data_all['sell_atr_sma'] = data_all['sell_atr'].rolling(window=sell_atr_sma_period ).mean()
-
-    # 4. 计算平均交易量
-    data_all['buy_avg_volume'] = data_all['volume'].rolling(window=buy_volume_window).mean()
-    data_all['sell_avg_volume'] = data_all['volume'].rolling(window=sell_volume_window).mean()
-    # 预先计算买入和卖出条件
-    data_all['buy_condition1'] = data_all['close'] > data_all['buy_vwap']
-    data_all['buy_condition2'] = data_all['volume'].shift(1) > data_all['buy_avg_volume'] * buy_volume_multiplier * (data_all['buy_atr'] / data_all['buy_atr_sma'])
-    data_all['buy_condition3'] = data_all['volume'] > data_all['buy_avg_volume'] * buy_volume_multiplier * (data_all['buy_atr'] / data_all['buy_atr_sma'])
-    data_all['buy_signal'] = data_all['buy_condition1'] & (data_all['buy_condition2'] | data_all['buy_condition3'])
-
-    data_all['sell_condition1'] = data_all['close'] < data_all['sell_vwap']
-    data_all['sell_condition2'] = data_all['volume'].shift(1) > data_all['sell_avg_volume'] * sell_volume_multiplier * (data_all['sell_atr'] / data_all['sell_atr_sma'])
-    data_all['sell_condition3'] = data_all['volume'] > data_all['sell_avg_volume'] * sell_volume_multiplier * (data_all['sell_atr'] / data_all['sell_atr_sma'])
-    data_all['sell_signal'] = data_all['sell_condition1'] & (data_all['sell_condition2'] | data_all['sell_condition3'])
-    '''
-    # 创建一个字典来存储转换后的NumPy数组
-    numpy_arrays = {}
-    numpy_arrays['datetime'] = data_all.index.strftime(
-        '%Y-%m-%d %H:%M:%S').to_numpy()
-
-    # 遍历DataFrame的每一列，并将其转换为NumPy数组
-    for column in data_all.columns:
-        numpy_arrays[column] = data_all[column].to_numpy()
-
-    # Find the index of the row where datetime is '2023-08-23 00:00:00'
-    # Note: We first convert the 'datetime' numpy array to a list and then find the index of the target date.
-    target_date = '2023-08-23 00:00:00'
-    row_at_date = np.where(numpy_arrays['datetime'] == target_date)[
-        0][0]  # Getting the first occurrence
-
-    target_date = pd.to_datetime(target_date, format='%Y-%m-%d %H:%M:%S')
-    end_location = datetime.strftime(
-        target_date + timedelta(days=6), '%Y-%m-%d %H:%M:%S')
-    end_idx = np.where(numpy_arrays['datetime'] == str(end_location))[0][0]
-
-    calculate_indicators_for_range_inplace(start=row_at_date, end=end_idx, arrays=numpy_arrays,
-                                           buy_vwap_period=buy_vwap_period, buy_atr_period=buy_atr_period,
-                                           buy_atr_sma_period=buy_atr_sma_period,
-                                           sell_vwap_period=sell_vwap_period, sell_atr_period=sell_atr_period,
-                                           sell_atr_sma_period=sell_atr_sma_period,
-                                           max_length=max_length)
-
-    numpy_arrays['buy_avg_volume'] = calculate_sma_numpy_with_padding(
-        numpy_arrays['volume'], buy_volume_window)
-    numpy_arrays['sell_avg_volume'] = calculate_sma_numpy_with_padding(
-        numpy_arrays['volume'], sell_volume_window)
-
-    # Re-calculating the conditions and signals
-    numpy_arrays['buy_condition1'] = numpy_arrays['close'] > numpy_arrays['buy_vwap']
-    numpy_arrays['buy_condition2'] = np.roll(numpy_arrays['volume'], shift=1) > numpy_arrays['buy_avg_volume'] * \
-        buy_volume_multiplier * \
-        (numpy_arrays['buy_atr'] / numpy_arrays['buy_atr_sma'])
-    numpy_arrays['buy_condition3'] = numpy_arrays['volume'] > numpy_arrays['buy_avg_volume'] * \
-        buy_volume_multiplier * \
-        (numpy_arrays['buy_atr'] / numpy_arrays['buy_atr_sma'])
-    numpy_arrays['buy_signal'] = numpy_arrays['buy_condition1'] & (
-        numpy_arrays['buy_condition2'] | numpy_arrays['buy_condition3'])
-
-    numpy_arrays['sell_condition1'] = numpy_arrays['close'] < numpy_arrays['sell_vwap']
-    numpy_arrays['sell_condition2'] = np.roll(numpy_arrays['volume'], shift=1) > numpy_arrays['sell_avg_volume'] * \
-        sell_volume_multiplier * \
-        (numpy_arrays['sell_atr'] / numpy_arrays['sell_atr_sma'])
-    numpy_arrays['sell_condition3'] = numpy_arrays['volume'] > numpy_arrays['sell_avg_volume'] * \
-        sell_volume_multiplier * \
-        (numpy_arrays['sell_atr'] / numpy_arrays['sell_atr_sma'])
-    numpy_arrays['sell_signal'] = numpy_arrays['sell_condition1'] & (
-        numpy_arrays['sell_condition2'] | numpy_arrays['sell_condition3'])
-
-    # Set the initial values for the relevant columns at the index (row_at_date - 1)
-    initial_values = {
-        'cash': 10000,
-        'position': 0,
-        'open_direction': None,
-        'open_cost_price': 0,
-        'max_profit': 0,
-        'BTC_debt': 0,
-        'USDT_debt': 0,
-        'net_value': 10000,
-        'free_BTC': 0
-    }
-
-    # Iterating through the dictionary keys to set the initial values
-    for column, initial_value in initial_values.items():
-        numpy_arrays[column][row_at_date - 1] = initial_value
-
-    start_time = time.time()
-
-    # 用NumPy数组的长度替换Pandas DataFrame的长度
-    # Replace 'some_column' with an actual column name
-    for start_idx in range(row_at_date, end_idx+1):
-        # print(numpy_arrays['datetime'][start_idx])
-        # 传递NumPy数组而不是DataFrame
-        trade = TradeLogic(
-            df=numpy_arrays,
-            index=start_idx,
-            buy_risk_per_trade=buy_risk_per_trade,
-            sell_risk_per_trade=sell_risk_per_trade,
-            buy_stop_loss=buy_stop_loss,
-            sell_stop_loss=sell_stop_loss,
-            buy_take_profit=buy_take_profit,
-            sell_take_profit=sell_take_profit)
-        trade.execute_trade()  # This modifies numpy_arrays in-place
-
-    final_data = pd.DataFrame.from_dict(
-        {key: pd.Series(value) for key, value in numpy_arrays.items()})
-    final_data.to_csv('numpy_for_backtest_0903_np.csv', index=False)
-
-    print(numpy_arrays['net_value'][end_idx])
-    print('Time taken for total: ', time.time() - start_time_total, ' seconds')
-    print('Time taken for loop: ', time.time() - start_time, ' seconds')
