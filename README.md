@@ -118,13 +118,11 @@ This library is currently made public with backtesting parts only, as strategies
 #### 策略启动之后每交易周期执行：
 ##### 1，执行trading_data_pipeline.py，将比特币数据更新到最新一天（东0区），并检查和填充空缺数据（币安交易所停机时间没有比特币数据，这些数据不填充），检查数据格式，检查是否有重复数据（少量不影响）。
 ##### 2，直接执行allocata.sh脚本，将优化周期改为5，这样就可以更新过去9天的策略的apply周期。（nohup ./allocate.sh > allocate_output.log 2>&1 &）
-##### 2，执行calculate_divisible_dates.py，确认更新日期
-##### 3，从opt_date_to_the_latest_date复制日期，去除逗号，将其输入并执行allocata.sh脚本，将指定日期，target，time period的交易策略进行优化。（nohup ./allocate.sh > allocate_output.log 2>&1 &）
 ##### 3，执行check_test_intergret.py,将所有的json文件整合在一起，并检查计算的交易策略是否有遗漏（云计算平台有逐出特性）。输出为processed_errors.json。
 ##### 4，执行fill_process_opt_gap.sh,读取processed_errors.json,调用rolling.py将空缺的交易策略进行补全。(nohup ./fill_process_opt_gap.sh > output_fill.txt 2>&1 &)
 ##### 5，执行check_test_intergret.py,将所有的json文件整合在一起，并检查计算的交易策略是否有遗漏（云计算平台有逐出特性）。输出为processed_errors.json。
 ##### 6，执行process_opt_for_model.py 将字典进行切分。并且添加参数平滑集。
-##### 7，执行Using_rolling_strategy.sh，更新select_model的参数。
+##### 7，执行Using_rolling_strategy.sh，更新select_model的参数。（由于基于该库构建的策略已经证明是盈利的，因此目前7以及7之后的部分不公开。）
 记得更新脚本的日期 \
 nohup ./Using_rolling_strategy.sh > Using_rolling_strategy.log 2>&1 &
 ##### 8.2 寻找最优lambda_1和socrethreshold
