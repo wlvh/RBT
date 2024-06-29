@@ -4,7 +4,7 @@
 Author: wlvh 124321452@qq.com
 Date: 2023-06-20 06:14:07
 LastEditors: wlvh 124321452@qq.com
-LastEditTime: 2023-11-10 12:22:33
+LastEditTime: 2024-05-23 04:45:27
 FilePath: /trading/rolling.py
 Description: 
 Copyright (c) 2023 by ${124321452@qq.com}, All Rights Reserved. 
@@ -16,6 +16,13 @@ Created on Thu Jun  8 16:56:04 2023
 
 @author: lyuhongwang
 """
+import os
+# 动态设置环境变量，限制numpy和pandas使用单线程
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
+os.environ['VECLIB_MAXIMUM_THREADS'] = '1'
+os.environ['NUMEXPR_NUM_THREADS'] = '1'
 import datetime as dt
 from DIY_Volume_numpy import optimize_and_run,find_row_by_date,evaluate_opt_results
 from rolling_strategy_test import *
@@ -41,6 +48,7 @@ def main():
     args = parser.parse_args()
 
     df = load_data(args.data_file)
+    df.fillna(method='ffill', inplace=True)
     target = args.target    
     rolling_strategy_test(df, data_period=args.data_period, num_evals=args.num_evals, targets=target,end_date=args.end_date, strategy_name=args.strategy_name)
 
