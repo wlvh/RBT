@@ -4,7 +4,7 @@
 Author: wlvh 124321452@qq.com
 Date: 2023-08-08 05:48:15
 LastEditors: wlvh 124321452@qq.com
-LastEditTime: 2024-03-19 00:19:53
+LastEditTime: 2024-08-04 06:04:24
 FilePath: /trading/trading_data_pipeline.py
 Description: 
     This script is used to process trading data.
@@ -41,7 +41,7 @@ find_duplicates(df)
 # Save the processed data to a CSV file
 df.to_csv('BTCUSDT_1m.csv')
 
-print("以下数据需要北京时间8点30以后才会更新前日数据")
+print("以下数据需要北京时间11点30以后才会更新前日数据")
 # 获取区块链信息
 get_block_ratiodate(update=True)
 print("以30天为时间窗口对BTC和区块链数据进行PCA，也许这个时间窗口可以调整")
