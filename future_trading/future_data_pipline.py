@@ -16,81 +16,106 @@ import json
 import requests
 import time
 import os
+import traceback
+import sys
 
-
-def get_binance_bars(symbol, interval, startTime, endTime):
-    # url = "https://api.binance.com/api/v3/klines"
+def get_binance_bars(symbol, interval, startTime, endTime, filepath):
     url = "https://fapi.binance.com/fapi/v1/klines"  # Binance Futures API endpoint
     df_list = []
-    while True:
-        startTime_str = str(int(startTime.timestamp() * 1000))
-        print(startTime)
-        endTime_str = str(int(endTime.timestamp() * 1000))
-        limit = '1000'
-        req_params = {"symbol": symbol, 'interval': interval, 'startTime': startTime_str,
-                      'endTime': endTime_str, 'limit': limit}
-        data = json.loads(requests.get(url, params=req_params).text)
-        time.sleep(0.2)
-        print(len(data))
-        # if not data or not isinstance(data, list):  # 检查data是否为空或不是列表
-        #     print("No data returned or data is not in list format.")
-        #     print(data)
-        #     break
-        if len(data) == 0:  # check if data is empty
-            break
-        try:
+    
+    try:
+        while startTime < endTime:
+            # Ensure startTime is always less than endTime
+            current_endTime = min(startTime + dt.timedelta(minutes=1000), endTime)
+            
+            startTime_str = str(int(startTime.timestamp() * 1000))
+            endTime_str = str(int(current_endTime.timestamp() * 1000))
+            
+            print(f"Fetching data from {startTime} to {current_endTime}")
+            
+            limit = '1000'
+            req_params = {"symbol": symbol, 'interval': interval, 'startTime': startTime_str,
+                          'endTime': endTime_str, 'limit': limit}
+            
+            response = requests.get(url, params=req_params)
+            response.raise_for_status()  # This will raise an HTTPError for bad responses
+            data = response.json()
+            
+            print(f"Received {len(data)} data points")
+            
+            if not data:  # check if data is empty
+                break
+            
             df = pd.DataFrame(data)
-        except:
-            break
-        df = df.iloc[:, 0:6]
-        df.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
-        df.open = df.open.astype("float")
-        df.high = df.high.astype("float")
-        df.low = df.low.astype("float")
-        df.close = df.close.astype("float")
-        df.volume = df.volume.astype("float")
-        df.datetime = [dt.datetime.utcfromtimestamp(
-            x / 1000.0) for x in df.datetime]  # update datetime format
-        df.set_index('datetime', inplace=True)  # set datetime as index
-        df_list.append(df)
-        # set new startTime as the last datetime of the current data
-        startTime = max(df.index) + dt.timedelta(0, 5)
-    # return None if df_list is empty
-    return pd.concat(df_list) if df_list else None
-
+            df = df.iloc[:, 0:6]
+            df.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
+            
+            for col in ['open', 'high', 'low', 'close', 'volume']:
+                df[col] = df[col].astype("float")
+            
+            df['datetime'] = pd.to_datetime(df['datetime'], unit='ms')
+            df.set_index('datetime', inplace=True)  # set datetime as index
+            
+            df_list.append(df)
+            
+            # set new startTime as the last datetime of the current data
+            if not df.empty:
+                startTime = max(df.index) + dt.timedelta(minutes=1)
+            else:
+                startTime = current_endTime
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        traceback.print_exc()
+    finally:
+        if df_list:
+            result_df = pd.concat(df_list)
+            return result_df
+        else:
+            print("No data was collected")
+            return None
 
 def update_data(filepath, symbol, interval):
-    # Parse the symbol and interval from the filepath
-    filename = os.path.basename(filepath)
-    # Load existing data
-    df_old = pd.read_csv(
-        filepath, sep=',', index_col='datetime', parse_dates=True)
-
-    # Get the last second datetime in the existing data, since the last first datetime data is not complete
-    last_datetime = df_old.index[-2]
+    filename = os.path.abspath(filepath)
+    
+    # Check if the file exists
+    if os.path.exists(filename):
+        # Load existing data
+        df_old = pd.read_csv(filename, sep=',', index_col='datetime', parse_dates=True)
+        if not df_old.empty:
+            # Get the last datetime in the existing data
+            last_datetime = df_old.index[-10]
+        else:
+            last_datetime = dt.datetime(2022, 9, 1)  # Or whatever start date you prefer
+    else:
+        print(f"File {filename} does not exist. Creating a new file.")
+        df_old = pd.DataFrame()
+        last_datetime = dt.datetime(2022, 9, 1)  # Or whatever start date you prefer
 
     # Get current datetime
-    # get current datetime as pandas Timestamp
-    current_datetime = pd.Timestamp.now(tz='UTC')
-    # Truncate current_datetime to minute precision and remove timezone information
-    current_datetime = current_datetime.floor('T').tz_localize(None)
+    current_datetime = pd.Timestamp.now(tz='UTC').floor('T').tz_localize(None)
 
     # If the data is not up-to-date, get new data
-    if last_datetime < current_datetime:
-        df_new = get_binance_bars(
-            symbol, interval, last_datetime.to_pydatetime(), current_datetime.to_pydatetime())
-        # Check if df_new is not empty (this means new data was found)
-        if not df_new.empty:
-            # Append new data to the old data
-            df = pd.concat([df_old, df_new]).drop_duplicates(keep='last')
+    if df_old.empty or last_datetime < current_datetime:
+        print(f"Fetching new data from {last_datetime} to {current_datetime}")
+        df_new = get_binance_bars(symbol, interval, last_datetime, current_datetime, filepath)
+        
+        if df_new is not None and not df_new.empty:
+            # Combine old and new data, remove duplicates
+            df_combined = pd.concat([df_old, df_new]).drop_duplicates(keep='last')
+            
+            # Save to a temporary file first
+            temp_filepath = filepath + '.temp'
+            df_combined.to_csv(temp_filepath)
+            
+            # If saving to temp file was successful, rename it to replace the original file
+            os.replace(temp_filepath, filepath)
+            print(f"Updated data saved to {filepath}")
         else:
-            df = df_old
+            print("No new data to add.")
     else:
-        df = df_old
+        print("Data is already up-to-date.")
 
-    # Save the updated data
-    df.to_csv(filepath)
-    print(f"Finished, now the data is saved in {filepath}")
+    print(f"Finished, data is saved in {filepath}")
 
 
 # 需要处理找不到的情况。
@@ -134,33 +159,80 @@ def find_discontinuities(df):
 def fill_discontinuity(df, symbol, interval, limit=100, max_retries=3):
     count = 0
     discontinuities = find_discontinuities(df)
+    url = "https://fapi.binance.com/fapi/v1/klines"  # Binance Futures API endpoint
+    
     for discontinuity in discontinuities:
-        if count > limit:
+        if count >= limit:
+            print(f"Reached the limit of {limit} fills. Stopping.")
             break
-
+        
         retry_count = 0
         while retry_count < max_retries:
             try:
-                startTime = (discontinuity +
-                             pd.Timedelta(minutes=1)).replace(second=0)
-                endTime = df.index[df.index > discontinuity][0].replace(
-                    second=0) - pd.Timedelta(minutes=1)
-                new_data = get_binance_bars(
-                    symbol, interval, startTime.to_pydatetime(), endTime.to_pydatetime())
-                df = pd.concat([df[df.index <= discontinuity],
-                               new_data, df[df.index > endTime]])
-                break
-            except:
+                startTime = (discontinuity + pd.Timedelta(minutes=1)).floor('T')
+                endTime = df.index[df.index > discontinuity][0].floor('T')
+                
+                print(f"Attempting to fill gap from {startTime} to {endTime}")
+                
+                new_data_list = []
+                current_start = startTime
+                
+                while current_start < endTime:
+                    current_end = min(current_start + dt.timedelta(minutes=1000), endTime)
+                    
+                    startTime_str = str(int(current_start.timestamp() * 1000))
+                    endTime_str = str(int(current_end.timestamp() * 1000))
+                    
+                    req_params = {"symbol": symbol, 'interval': interval, 'startTime': startTime_str,
+                                  'endTime': endTime_str, 'limit': '1000'}
+                    
+                    response = requests.get(url, params=req_params)
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    print(f"Received {len(data)} data points")
+                    
+                    if not data:
+                        break
+                    
+                    temp_df = pd.DataFrame(data)
+                    temp_df = temp_df.iloc[:, 0:6]
+                    temp_df.columns = ['datetime', 'open', 'high', 'low', 'close', 'volume']
+                    
+                    for col in ['open', 'high', 'low', 'close', 'volume']:
+                        temp_df[col] = temp_df[col].astype("float")
+                    
+                    temp_df['datetime'] = pd.to_datetime(temp_df['datetime'], unit='ms')
+                    temp_df.set_index('datetime', inplace=True)
+                    
+                    new_data_list.append(temp_df)
+                    
+                    current_start = max(temp_df.index) + dt.timedelta(minutes=1)
+                
+                if new_data_list:
+                    new_data = pd.concat(new_data_list)
+                    df = pd.concat([df[df.index <= discontinuity], new_data, df[df.index > endTime]])
+                    df = df.sort_index().drop_duplicates()
+                    print(f"Successfully filled gap from {startTime} to {endTime}")
+                    break
+                else:
+                    print(f"No data retrieved for gap from {startTime} to {endTime}")
+                    retry_count += 1
+            
+            except Exception as e:
                 retry_count += 1
-                print(
-                    f"ConnectionError occurred. Retry {retry_count}. Waiting for 1 second before retrying...")
-                time.sleep(1)
-
+                print(f"Error occurred while filling gap: {str(e)}")
+                if retry_count < max_retries:
+                    print(f"Retrying... Attempt {retry_count + 1} of {max_retries}")
+                    time.sleep(1)
+                traceback.print_exc()
+        
         if retry_count == max_retries:
             print(f"Skip discontinuity point after {max_retries} retries.")
+        
         count += 1
-
-    print(f'Finished {count} times.')
+    
+    print(f'Finished filling {count} discontinuities.')
     return df
 
 
@@ -242,20 +314,16 @@ if __name__ == '__main__':
     symbol = "BTCUSDT"
     interval = "1m"  # 1分钟间隔
     # 设置开始时间和结束时间
-    start_time = dt.datetime(2024, 7, 1)
+    start_time = dt.datetime(2022, 9, 1)
     end_time = dt.datetime.now()
-    #df = get_binance_bars(symbol, interval, start_time, end_time)
 
     filepath = 'BTCUSDT_future_1m.csv'  # Replace with the actual file path
-    # print(len(df))
-    #df.to_csv(filepath)
     print("Now we are going to update bitcoin data")
     try:
         update_data(filepath=filepath, symbol=symbol, interval=interval)
-    except:
-        print('did not find the file, maybe the file is locked. going to download the data from the beginning')
-        df = get_binance_bars(symbol, interval, start_time, end_time)
-        df.to_csv(filepath)
+    except Exception as e:
+        print(f"An error occurred during the update process: {e}")
+        traceback.print_exc()
 
     # Load the data
     df = load_data(filepath)
@@ -270,4 +338,4 @@ if __name__ == '__main__':
     find_duplicates(df)
 
     # Save the processed data to a CSV file
-    df.to_csv('BTCUSDT_future_1m.csv')
+    df.to_csv(filepath)
