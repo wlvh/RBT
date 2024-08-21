@@ -1,3 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+'''
+Author: wlvh 124321452@qq.com
+Date: 2024-08-14 07:26:31
+LastEditors: wlvh 124321452@qq.com
+LastEditTime: 2024-08-21 07:20:05
+FilePath: /trading/RL_selector/future_data_collector.py
+Description: 
+Copyright (c) 2024 by ${124321452@qq.com}, All Rights Reserved. 
+'''
 import requests
 import pandas as pd
 import numpy as np
@@ -7,6 +18,8 @@ import os
 from zipfile import ZipFile
 from scipy.stats import skew, kurtosis
 import re
+import concurrent.futures
+from tqdm import tqdm
 
 def calculate_funding_rate_indicators(df, window):
     """
@@ -420,32 +433,42 @@ def process_kline_data(klines, date_range):
         print(f"Date range: {date_range[0]} to {date_range[-1]}")
         return None
 
-def fetch_and_process_data(usdt_perpetuals, start_timestamp, end_timestamp, date_range):
+def fetch_and_process_single_symbol(args):
+    symbol, start_timestamp, end_timestamp, date_range = args
+    try:
+        klines = fetch_kline_data(symbol, '1d', start_timestamp, end_timestamp)
+        if not klines:
+            return symbol, None, f"No data retrieved for {symbol}"
+        
+        df = process_kline_data(klines, date_range)
+        if df is None:
+            return symbol, None, f"Failed to process data for {symbol}"
+        
+        return symbol, df, None
+    except Exception as e:
+        return symbol, None, f"Error processing {symbol}: {str(e)}"
+
+def fetch_and_process_data(usdt_perpetuals, start_timestamp, end_timestamp, date_range, max_workers=4):
     all_contract_data = {}
     failed_symbols = []
-    # usdt_perpetuals总数有281，但100应该足够了
-    for i, symbol in enumerate(usdt_perpetuals, 1):
-        try:
-            print(f"Processing {symbol} ({i}/{len(usdt_perpetuals)})")
-            
-            klines = fetch_kline_data(symbol, '1d', start_timestamp, end_timestamp)
-            if not klines:
-                print(f"No data retrieved for {symbol}")
-                failed_symbols.append(symbol)
-                continue
-            
-            df = process_kline_data(klines, date_range)
-            if df is None:
-                print(f"Failed to process data for {symbol}")
-                failed_symbols.append(symbol)
-                continue
-            
+
+    # 准备参数
+    args_list = [(symbol, start_timestamp, end_timestamp, date_range) for symbol in usdt_perpetuals]
+
+    # 使用线程池执行并行处理
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        results = list(tqdm(executor.map(fetch_and_process_single_symbol, args_list), 
+                            total=len(usdt_perpetuals), 
+                            desc="Processing symbols"))
+
+    # 处理结果
+    for symbol, df, error_message in results:
+        if df is not None:
             all_contract_data[symbol] = df
             print(f"Successfully processed {symbol}")
-        except Exception as e:
-            print(f"Error processing {symbol}: {str(e)}")
+        else:
             failed_symbols.append(symbol)
-            continue
+            print(error_message)
 
     return all_contract_data, failed_symbols
 
@@ -696,21 +719,14 @@ def download_binance_futuremetircs(start_date, end_date, download_dir, symbol='B
         current_date += timedelta(days=1)
 
 
-
-
-
-# API URL
-url = 'https://api.glassnode.com/v2/metrics/endpoints'
-
-# 发送GET请求
-response = requests.get(url)
-data = response.json()
-
 # Example usage
 if __name__ == "__main__":
     start_date = "2023-01-16"
-    end_date = "2024-08-12"
-    directory = r'C:\Users\Administrator.DESKTOP-4H80TP4\.spyder-py3\binance_data' 
+    # Get today's date in UTC and subtract one day
+    end_date_utc = datetime.utcnow() - timedelta(days=1)
+    # Format end_date to match the format of start_date
+    end_date = end_date_utc.strftime("%Y-%m-%d")
+    directory = "/home/WLH_trade/0615/trading/RL_selector/binance_data"
     #先运行download_binance_data，获取future相关的数据
     download_binance_futuremetircs(start_date,end_date,download_dir=directory)
     #将这些数据整理成csv文件，处理缺失值，然后计算各类指标
@@ -723,7 +739,7 @@ if __name__ == "__main__":
     print(result.isnull().sum().to_string())
     if result is not None:
         print("\nBTCUSDT Contract Data for Different Time Windows:")
-        print(result.to_string(index=False))
+        #print(result.to_string(index=False))
         print("\nYou can uncomment the last line in the script to save this data to a CSV file.")
         # Optionally save to CSV
         result.to_csv('btcusdt_contract_data.csv', index=False)
@@ -731,7 +747,7 @@ if __name__ == "__main__":
         print("Failed to retrieve data.")
         
         
-    result_df_check = pd.read_csv('btcusdt_contract_data.csv', index_col='date')
-    print(result_df_check.isnull().sum().to_string())
-    result_df_check = result_df_check.dropna(axis=1)
-    missing_indices = result_df_check[result_df_check['7_funding_rate_mean_reversion'].isnull()].index
+    # result_df_check = pd.read_csv('btcusdt_contract_data.csv', index_col='date')
+    # print(result_df_check.isnull().sum().to_string())
+    # result_df_check = result_df_check.dropna(axis=1)
+    # missing_indices = result_df_check[result_df_check['7_funding_rate_mean_reversion'].isnull()].index
