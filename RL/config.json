@@ -1,0 +1,15 @@
+{"targets": ["total_return","sqn", "drawdown", "drawdown_value", "alpha","profitable_1days_ratio","profitable_2days_ratio","profitable_3days_ratio","drawdown_alpha","win_ratio_alpha","drawdown_win_ratio_alpha","vwr","win ratio value", "drawdown value", "SharpeDIY", "beta","turnover_rate","daily_turnover_rate","daily_trade","sqn_drawdown", "drawdown_win_ratio", "drawdown_win_ratio_value", "annual_volatility"],
+"target_names": ["weighted_sqn", "weighted_win_ratio", "weighted_drawdown_win_ratio_value", "weighted_value", "weighted_sqn_drawdown", "weighted_drawdown_value", "weighted_drawdown", "weighted_win_ratio_value", "weighted_SharpeDIY", "weighted_profitable_1days_ratio", "weighted_profitable_2days_ratio", "weighted_profitable_3days_ratio"], 
+"opt_periods": ["35", "56", "70"],
+"strategy_names": ["VWAPStrategyLong","VWAPStrategyShort","RSIV_StrategyOneday","RSIV_StrategyFourhour","MAVStrategy","WRSIStrategy"],
+"alphas":  [null, 0.6, 0.7, 0.8, 0.9],
+"rolling_lens": [25,38,52,77],
+"lambda_1s":[0.0,0.1],
+"lambda_1s_back":[0.0,0.05,0.1],
+"apply_abs":["nature"],
+"simple_targets":["sqn", "drawdown", "profitable_2days_ratio",
+"profitable_3days_ratio","drawdown_alpha","win_ratio_alpha","drawdown_win_ratio_alpha","SharpeDIY", "daily_trade","sqn_drawdown", "drawdown_win_ratio", "annual_volatility"],
+"int_list":["sell_volume_window","buy_volume_window","sell_vwap_period","buy_vwap_period",
+                "buy_atr_period","sell_atr_period","buy_atr_sma_period","sell_atr_sma_period"]
+}
+
