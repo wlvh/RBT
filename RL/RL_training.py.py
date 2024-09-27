@@ -411,7 +411,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     vec_env = VecMonitor(vec_env)
     vec_env = VecNormalize(
         vec_env, 
-        norm_obs=True, 
+        norm_obs=False, 
         norm_reward=True, 
         clip_obs=5., #这个可以事后在样本外进行检测
         clip_reward=3.,
@@ -462,13 +462,13 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     # batch_size: 通常设置为n_steps的一个较小的因子。例如，你可以尝试16或32。
     # n_epochs:默认值通常是10。对于你的问题，可以从5开始尝试，然后根据性能调整。
     # ent_coef=0.01,
-    n_steps = 2080
+    n_steps = 2600
     batch_size = n_steps // 2
     n_epochs = 10
     gamma = 0.99
     vf_coef = 1
     ent_coef = 0.01
-    gae_lambda = 0.90
+    gae_lambda = 0.99
     learning_rate = 0.0005
     import math
     def cosine_annealing_schedule(initial_lr, min_lr=1e-5):
@@ -485,6 +485,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
         device='cuda',
         learning_rate=learning_rate,
         n_steps=n_steps,
+        clip_range=0.3,
         batch_size=batch_size,
         n_epochs=n_epochs,
         gamma=gamma,
@@ -725,7 +726,7 @@ if __name__ == "__main__":
     adv_param = [0.1,0.01]
     feature_extractor = 'autoencoder'
     adjust_market_data = rolling_window_standardize(df=market_data,bool_columns=bool_columns, abs_mean_larger10=abs_mean_larger10, window_size=30, method='robust', process_type=1)
-    key = '0650325fe0eaddd4d6e6131e95bc2ad4868653d5'
+    
     wandb.login(key=key)
     # for method in methods:
     #     for process_type in process_types:
