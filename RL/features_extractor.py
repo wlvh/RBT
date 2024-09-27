@@ -69,38 +69,31 @@ class AutoEncoderFeaturesExtractor(BaseFeaturesExtractor):
         strategies_dim = observation_space['strategies'].shape[0] * observation_space['strategies'].shape[1]
         
         self.market_encoder = nn.Sequential(
-            nn.Linear(market_dim, 256),
-            nn.BatchNorm1d(256),
+            nn.Linear(market_dim, 128),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, 64)
+            nn.Linear(128, 64),
+            nn.ReLU()
         )
         
         self.strategies_encoder = nn.Sequential(
-            nn.Linear(strategies_dim, 256),
-            nn.BatchNorm1d(256),
+            nn.Linear(strategies_dim, 128),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(256, 128),
-            nn.BatchNorm1d(128),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, 64)
+            nn.Linear(128, 64),
+            nn.ReLU()
         )
         
         self.combiner = nn.Sequential(
-            nn.Linear(128, 128),
-            nn.BatchNorm1d(128),
+            nn.Linear(128, 64),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(128, features_dim),
-            nn.BatchNorm1d(features_dim),
+            nn.Linear(64, features_dim),
             nn.ReLU()
         )
+
+    def forward(self, observations):
+        market_features = self.market_encoder(observations['market'])
+        strategies_features = self.strategies_encoder(observations['strategies'].flatten(start_dim=1))
+        combined = torch.cat([market_features, strategies_features], dim=1)
+        return self.combiner(combined)
 
         # self.decoder = nn.Sequential(
         #     nn.Linear(features_dim, 128),
@@ -113,13 +106,6 @@ class AutoEncoderFeaturesExtractor(BaseFeaturesExtractor):
         #     nn.Dropout(0.3),
         #     nn.Linear(256, market_dim + strategies_dim)
         # )
-
-    def forward(self, observations):
-        market_features = self.market_encoder(observations['market'])
-        strategies_features = self.strategies_encoder(observations['strategies'].flatten(start_dim=1))
-        combined = torch.cat([market_features, strategies_features], dim=1)
-        
-        return self.combiner(combined)
 
     # def reconstruct(self, encoded):
     #     return self.decoder(encoded)
