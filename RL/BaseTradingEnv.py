@@ -151,7 +151,7 @@ class BaseTradingEnv(gym.Env, ABC):
         self.weeks = weeks
         self.episode_step = 0
         self.episode_portfolio_returns = []
-
+        self.saved_recommended_strategies = {}
         
     @abstractmethod
     def define_action_space(self):
@@ -499,8 +499,6 @@ class BaseTradingEnv(gym.Env, ABC):
 
     def step(self, action, prediction_index=None):
         # 验证预测模式下是否提供了 prediction_index
-        if not self.is_training and prediction_index is None:
-            raise ValueError("prediction_index must be provided in prediction mode")
         # 处理动作
         self.process_action(action)
         self.episode_step += 1
@@ -553,6 +551,7 @@ class BaseTradingEnv(gym.Env, ABC):
                 total_portfolio_return = np.sum(self.episode_portfolio_returns)
                 info['total_portfolio_return'] = total_portfolio_return
                 info['sharpe_ratio'] = self.calculate_reward(done)
+                info['recommended'] = self.saved_recommended_strategies
             # 如果不需要 f1_score，可以注释或移除以下行
             # info['f1_score'] = f1_score(self.episode_true_labels, self.episode_predicted_labels, average='macro', zero_division=1)
         return info
@@ -564,6 +563,7 @@ class BaseTradingEnv(gym.Env, ABC):
         # 不调用 super().reset()
         # 初始化环境状态
         self.selected_strategy_returns = []
+        self.saved_recommended_strategies = {}
         logger.debug(f"Resetting environment. Episode count: {self.episode_count}")
         self.episode_count += 1
     
@@ -638,6 +638,10 @@ class BaseTradingEnv(gym.Env, ABC):
         logger.debug(f"predictions_bin: {predictions_bin}")
         return f1_score(true_labels_bin, predictions_bin, average='macro', zero_division=1)
 
+    def get_attr(self, attr_name):
+        """获取指定名称的属性值。"""
+        return getattr(self, attr_name)
+
         
 class ScoreTradingEnv(BaseTradingEnv):
     def __init__(self, 
@@ -669,7 +673,7 @@ class ScoreTradingEnv(BaseTradingEnv):
         
         # 用于存储选中策略的历史回报，以计算夏普比率
         self.selected_strategy_returns = []
-    
+        self.saved_recommended_strategies = {}
     # def define_action_space(self):
     #     """
     #     定义动作空间为对 'time_idx', 'target_idx', 'type_idx' 的权重分配。
@@ -731,12 +735,13 @@ class ScoreTradingEnv(BaseTradingEnv):
         portfolio_return = np.mean(selected_returns)  # 使用平均回报
         self.episode_portfolio_returns.append(portfolio_return)
         
-        logger.debug(f"Selected returns: {selected_returns}")
-        logger.debug(f"Portfolio return: {portfolio_return}")
+        print(f"Selected returns: {selected_returns}")
+        print(f"Portfolio return: {portfolio_return}")
         
         if not self.is_training:
             # 在预测模式下打印推荐策略和基于的日期
-            print(f"推荐日期: {self.current_date.strftime('%Y-%m-%d')}")
+            date_str = self.current_date.strftime('%Y-%m-%d')
+            print(f"推荐日期: {date_str}")
             print("推荐的交易策略：")
             # 使用映射字典将索引转换为实际值
             recommended_strategies = self.selected_strategies.copy()
@@ -745,8 +750,15 @@ class ScoreTradingEnv(BaseTradingEnv):
             recommended_strategies['target'] = recommended_strategies['target_idx'].map(self.target_idx_to_target)
             recommended_strategies['type'] = recommended_strategies['type_idx'].map(self.type_idx_to_type)
             # 选择需要显示的列
-            display_columns = ['time', 'target', 'type', 'return'] + self.param_columns
-            print(recommended_strategies[display_columns])
+            display_columns = ['date', 'target', 'type', 'return']
+            strategies_str = recommended_strategies[display_columns].to_string(index=False)
+            # 将推荐策略保存到字典中
+            if date_str not in self.saved_recommended_strategies:
+                self.saved_recommended_strategies[date_str] = []
+            # 转换为字典列表
+            strategies_dict = recommended_strategies[display_columns].to_dict(orient='records')
+            self.saved_recommended_strategies[date_str].extend(strategies_dict)
+            print(self.saved_recommended_strategies[date_str])
 
     
     def _compute_strategy_scores(self, normalized_action: np.ndarray) -> np.ndarray:
@@ -794,12 +806,16 @@ class ScoreTradingEnv(BaseTradingEnv):
             float: 计算得到的奖励
         """
         reward = 0.0
-        if len(self.episode_portfolio_returns) > 4: #先储存一个月的信息再来计算，有利于平稳奖励value
+        # if len(self.episode_portfolio_returns) > 4: #先储存一个月的信息再来计算，有利于平稳奖励value
+        #     returns = np.array(self.episode_portfolio_returns)
+        #     sharpe_ratio = self._calculate_sharpe_ratio(returns)
+        #     reward = sharpe_ratio
+        # else:
+        #     reward = 0.0
+        if done: #先储存一个月的信息再来计算，有利于平稳奖励value
             returns = np.array(self.episode_portfolio_returns)
             sharpe_ratio = self._calculate_sharpe_ratio(returns)
             reward = sharpe_ratio
-        else:
-            reward = 0.0
     
         return reward
     
@@ -840,7 +856,8 @@ class ScoreTradingEnv(BaseTradingEnv):
         info = {
             'portfolio_return': portfolio_return,
             'current_date': self.current_date,
-            'episode_step': self.episode_step
+            'episode_step': self.episode_step,
+            'recommended':self.saved_recommended_strategies
         }
         if done:
             if len(self.episode_portfolio_returns) > 0:

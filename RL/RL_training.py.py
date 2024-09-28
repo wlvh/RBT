@@ -405,7 +405,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
         return _init
 
     # SubprocVecEnv会导致无法正常print
-    num_envs = 4  # 根据您的CPU核心数量调整
+    num_envs = 5  # 根据您的CPU核心数量调整
     env_fns = [make_env(i) for i in range(num_envs)]
     vec_env = SubprocVecEnv(env_fns)
     vec_env = VecMonitor(vec_env)
@@ -424,7 +424,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
         market_data=market_data,
         num_samples=20,
         is_training=True,
-        top_k=2)
+        top_k=3)
     observation, info = env.reset()
     assert isinstance(observation, dict), "Observation should be a dict."
     assert 'market' in observation and 'strategies' in observation, "Observation dict should contain 'market' and 'strategies'."
@@ -462,14 +462,14 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     # batch_size: 通常设置为n_steps的一个较小的因子。例如，你可以尝试16或32。
     # n_epochs:默认值通常是10。对于你的问题，可以从5开始尝试，然后根据性能调整。
     # ent_coef=0.01,
-    n_steps = 2600
-    batch_size = n_steps // 2
+    n_steps = 520*4
+    batch_size = 520*2
     n_epochs = 10
-    gamma = 0.99
+    gamma = 1
     vf_coef = 1
     ent_coef = 0.01
-    gae_lambda = 0.99
-    learning_rate = 0.0005
+    gae_lambda = 1
+    learning_rate = 0.001
     import math
     def cosine_annealing_schedule(initial_lr, min_lr=1e-5):
         def schedule(progress_remaining):
@@ -492,7 +492,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
         vf_coef=vf_coef,
         ent_coef=ent_coef,
         gae_lambda=gae_lambda,
-        max_grad_norm=0.5,
+        max_grad_norm=0.6,
         #clip_range_vf=None  # 禁用 value function 的裁剪
     )
 
@@ -502,7 +502,7 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     # 实例化回调
     wandb_callback = WandbLoggingCallback(
     eval_env=vec_env,
-    eval_freq=2600,  # 根据需要调整
+    eval_freq=n_steps,  # 根据需要调整
     n_eval_episodes=50,
     total_timesteps=14000000,  # 传递总步数
     verbose=1
@@ -523,16 +523,68 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     model_path = f"./models/{model_name}_{run_id}"
     model.save(model_path)
     # 保存 VecNormalize 的统计数据
-    vec_env.save("vec_normalize.pkl")
+    vec_env.save(f"{model_path}_vec_normalize.pkl")
     # 重新创建向量化环境
-    vec_env = SubprocVecEnv([make_env(i) for i in range(num_envs)])
-    vec_env = VecMonitor(vec_env)
-    vec_env = VecNormalize.load("vec_normalize.pkl", env=vec_env)
-    # 加载 PPO 模型，并传入 VecNormalize 环境
-    model = PPO.load("ppo_score_trading", env=vec_env)    
+    # 加载 PPO 模型
+    model_path = r"C:\Users\Administrator.DESKTOP-4H80TP4\RBT\models\ppo_trading_model_idalfslp.zip"
+    model = PPO.load(model_path, env=vec_env, device='cuda')  # 根据需要选择 'cuda' 或 'cpu'   
     # 设置 VecNormalize 为非训练模式
+    # 定义单一环境创建函数
+    def make_single_env():
+        env = ScoreTradingEnv(
+            end_date=end_date, 
+            weeks=weeks, 
+            strategies_data=strategies_data, 
+            market_data=market_data,
+            num_samples=20,
+            is_training=False,  # 预测时设置为 False
+            top_k=2  # 根据您的需求调整
+        )
+        env = Monitor(env)
+        return env
+    
+    # 使用 DummyVecEnv 创建单一环境
+    vec_env = DummyVecEnv([make_single_env])
+    vec_env = VecMonitor(vec_env)
+
+    # 加载保存的 VecNormalize 统计数据
+    vec_norm_path = r"C:\Users\Administrator.DESKTOP-4H80TP4\RBT\models\ppo_trading_model_idalfslp_vec_normalize.pkl"
+    vec_env = VecNormalize.load(vec_norm_path, vec_env)
     vec_env.training = False
-    vec_env.norm_reward = False  # 如果不需要归一化奖励    
+    vec_env.norm_reward = False  # 预测时通常不需要归一化奖励
+     # 重置环境，获取初始观察值
+    obs = vec_env.reset()
+    # 获取策略名称列表（假设 strategies_data 有 'strategy_name' 列）
+    # 进行预测和交互
+    done = False
+    while not done:
+        # 使用模型进行预测
+        action, _states = model.predict(obs, deterministic=True)
+        
+        # 将动作传递给环境
+        obs, rewards, done, info = vec_env.step(action)
+        
+        # 根据需要处理环境返回的信息
+        print(f"Action: {action}, Reward: {rewards}, Done: {done}")
+        
+        # 如果需要，可以在这里添加更多的处理逻辑，例如记录日志、可视化等
+    def get_attr(env, attr_name, indices=None):
+        """使用 env_method 调用环境的 get_attr 方法。"""
+        return env.env_method('get_attr', attr_name, indices=indices)
+
+    
+    # 获取环境实例
+    env = vec_env.envs[0]
+    
+    # 导出所有推荐的策略
+    saved_strategies = get_attr(vec_env, 'saved_recommended_strategies')
+    # 将所有推荐的策略保存为一个 JSON 文件
+    with open('all_recommended_strategies.json', 'w', encoding='utf-8') as f:
+        json.dump(env.saved_recommended_strategies, f, ensure_ascii=False, indent=4)
+    
+    print("所有推荐的策略已保存到 'all_recommended_strategies.json'")    
+    # 关闭环境
+    vec_env.close()   
     
     # Save the training parameters
     params = {
@@ -726,7 +778,7 @@ if __name__ == "__main__":
     adv_param = [0.1,0.01]
     feature_extractor = 'autoencoder'
     adjust_market_data = rolling_window_standardize(df=market_data,bool_columns=bool_columns, abs_mean_larger10=abs_mean_larger10, window_size=30, method='robust', process_type=1)
-    
+    key = '9400e057692977a1b3564041a6d635b1f84a8522'
     wandb.login(key=key)
     # for method in methods:
     #     for process_type in process_types:
