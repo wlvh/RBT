@@ -576,11 +576,19 @@ def train_model(strategies_data: pd.DataFrame, market_data: pd.DataFrame, end_da
     # 获取环境实例
     env = vec_env.envs[0]
     
-    # 导出所有推荐的策略
-    saved_strategies = get_attr(vec_env, 'saved_recommended_strategies')
-    # 将所有推荐的策略保存为一个 JSON 文件
+    def convert_timestamp(obj):
+        if isinstance(obj, dict):
+            return {key: convert_timestamp(value) for key, value in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_timestamp(item) for item in obj]
+        elif isinstance(obj, pd.Timestamp):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')  # 使用 strftime 来格式化日期时间
+        return obj
+    
+    converted_data = convert_timestamp(info[0]['recommended'])
+    
     with open('all_recommended_strategies.json', 'w', encoding='utf-8') as f:
-        json.dump(env.saved_recommended_strategies, f, ensure_ascii=False, indent=4)
+        json.dump(converted_data, f, ensure_ascii=False, indent=4)
     
     print("所有推荐的策略已保存到 'all_recommended_strategies.json'")    
     # 关闭环境
