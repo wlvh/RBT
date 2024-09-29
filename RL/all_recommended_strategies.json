@@ -1,13 +1,13 @@
 {
     "2023-04-09": [
         {
-            "date": "2023-04-09 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.14021689668234427
         },
         {
-            "date": "2023-04-09 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.1200126848515326
@@ -15,13 +15,13 @@
     ],
     "2023-04-16": [
         {
-            "date": "2023-04-16 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": 0.15490327659314151
         },
         {
-            "date": "2023-04-16 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_2days_ratio",
             "type": "RSIV_StrategyFourhour",
             "return": 0.08677995507651759
@@ -29,13 +29,13 @@
     ],
     "2023-04-23": [
         {
-            "date": "2023-04-23 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_value",
             "type": "MAVStrategy",
             "return": 0.034099845841603305
         },
         {
-            "date": "2023-04-23 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.17318070601571023
@@ -43,13 +43,13 @@
     ],
     "2023-04-30": [
         {
-            "date": "2023-04-30 00:00:00",
+            "time": 56,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyFourhour",
             "return": 0.015907267261338065
         },
         {
-            "date": "2023-04-30 00:00:00",
+            "time": 56,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.06244595388531837
@@ -57,13 +57,13 @@
     ],
     "2023-05-07": [
         {
-            "date": "2023-05-07 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": 0.058672616421391766
         },
         {
-            "date": "2023-05-07 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_2days_ratio",
             "type": "RSIV_StrategyFourhour",
             "return": 0.10501237575820843
@@ -71,13 +71,13 @@
     ],
     "2023-05-14": [
         {
-            "date": "2023-05-14 00:00:00",
+            "time": 35,
             "target": "weighted_SharpeDIY",
             "type": "WRSIStrategy",
             "return": 0.043324906794176554
         },
         {
-            "date": "2023-05-14 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio_value",
             "type": "WRSIStrategy",
             "return": 0.02275678451271701
@@ -85,13 +85,13 @@
     ],
     "2023-05-21": [
         {
-            "date": "2023-05-21 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.10259830510354928
         },
         {
-            "date": "2023-05-21 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.08050852948717768
@@ -99,13 +99,13 @@
     ],
     "2023-05-28": [
         {
-            "date": "2023-05-28 00:00:00",
+            "time": 35,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyOneday",
             "return": 0.13301782000229223
         },
         {
-            "date": "2023-05-28 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "MAVStrategy",
             "return": 0.14431012231824458
@@ -113,13 +113,13 @@
     ],
     "2023-06-04": [
         {
-            "date": "2023-06-04 00:00:00",
+            "time": 35,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyOneday",
             "return": 0.039588615929294635
         },
         {
-            "date": "2023-06-04 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "MAVStrategy",
             "return": 0.17888734037007903
@@ -127,13 +127,13 @@
     ],
     "2023-06-11": [
         {
-            "date": "2023-06-11 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.11215814537179947
         },
         {
-            "date": "2023-06-11 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "VWAPStrategyShort",
             "return": 0.10207717829940144
@@ -141,13 +141,13 @@
     ],
     "2023-06-18": [
         {
-            "date": "2023-06-18 00:00:00",
+            "time": 35,
             "target": "weighted_sqn",
             "type": "VWAPStrategyShort",
             "return": 0.20127114699582083
         },
         {
-            "date": "2023-06-18 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_3days_ratio",
             "type": "VWAPStrategyShort",
             "return": 0.2067664526731008
@@ -155,13 +155,13 @@
     ],
     "2023-06-25": [
         {
-            "date": "2023-06-25 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.01936716538760752
         },
         {
-            "date": "2023-06-25 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "VWAPStrategyShort",
             "return": 0.015104805436825908
@@ -169,13 +169,13 @@
     ],
     "2023-07-02": [
         {
-            "date": "2023-07-02 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.02243843872430218
         },
         {
-            "date": "2023-07-02 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.1904596853696221
@@ -183,13 +183,13 @@
     ],
     "2023-07-09": [
         {
-            "date": "2023-07-09 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio",
             "type": "WRSIStrategy",
             "return": 0.0015403747098881038
         },
         {
-            "date": "2023-07-09 00:00:00",
+            "time": 70,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyFourhour",
             "return": 0.11110106951950827
@@ -197,13 +197,13 @@
     ],
     "2023-07-16": [
         {
-            "date": "2023-07-16 00:00:00",
+            "time": 56,
             "target": "weighted_win_ratio",
             "type": "VWAPStrategyShort",
             "return": 0.026308912803814755
         },
         {
-            "date": "2023-07-16 00:00:00",
+            "time": 70,
             "target": "weighted_sqn",
             "type": "MAVStrategy",
             "return": -0.00911370263028044
@@ -211,13 +211,13 @@
     ],
     "2023-07-23": [
         {
-            "date": "2023-07-23 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio",
             "type": "WRSIStrategy",
             "return": 0.033943763183675424
         },
         {
-            "date": "2023-07-23 00:00:00",
+            "time": 70,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyFourhour",
             "return": 0.07295990584087853
@@ -225,13 +225,13 @@
     ],
     "2023-07-30": [
         {
-            "date": "2023-07-30 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.01861923321173875
         },
         {
-            "date": "2023-07-30 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "WRSIStrategy",
             "return": 0.09595771684504872
@@ -239,13 +239,13 @@
     ],
     "2023-08-06": [
         {
-            "date": "2023-08-06 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown",
             "type": "WRSIStrategy",
             "return": 0.01389727665011975
         },
         {
-            "date": "2023-08-06 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_2days_ratio",
             "type": "MAVStrategy",
             "return": -0.006821778443744986
@@ -253,13 +253,13 @@
     ],
     "2023-08-13": [
         {
-            "date": "2023-08-13 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_3days_ratio",
             "type": "VWAPStrategyShort",
             "return": 0.2068722286009308
         },
         {
-            "date": "2023-08-13 00:00:00",
+            "time": 56,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": -0.08830403034141632
@@ -267,13 +267,13 @@
     ],
     "2023-08-20": [
         {
-            "date": "2023-08-20 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "WRSIStrategy",
             "return": 0.030937960639203954
         },
         {
-            "date": "2023-08-20 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio_value",
             "type": "MAVStrategy",
             "return": 0.031284503103913064
@@ -281,13 +281,13 @@
     ],
     "2023-08-27": [
         {
-            "date": "2023-08-27 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "MAVStrategy",
             "return": 0.2231952483709121
         },
         {
-            "date": "2023-08-27 00:00:00",
+            "time": 70,
             "target": "weighted_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": 0.15415578501378535
@@ -295,13 +295,13 @@
     ],
     "2023-09-03": [
         {
-            "date": "2023-09-03 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "VWAPStrategyLong",
             "return": -0.07701505354890803
         },
         {
-            "date": "2023-09-03 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "RSIV_StrategyOneday",
             "return": 0.02970307297833008
@@ -309,13 +309,13 @@
     ],
     "2023-09-10": [
         {
-            "date": "2023-09-10 00:00:00",
+            "time": 35,
             "target": "weighted_value",
             "type": "RSIV_StrategyFourhour",
             "return": -0.013719629062228789
         },
         {
-            "date": "2023-09-10 00:00:00",
+            "time": 56,
             "target": "weighted_sqn",
             "type": "RSIV_StrategyFourhour",
             "return": -0.04489564620550601
@@ -323,13 +323,13 @@
     ],
     "2023-09-17": [
         {
-            "date": "2023-09-17 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio",
             "type": "WRSIStrategy",
             "return": -0.011175078902664004
         },
         {
-            "date": "2023-09-17 00:00:00",
+            "time": 70,
             "target": "weighted_SharpeDIY",
             "type": "RSIV_StrategyFourhour",
             "return": 0.03548858563248802
@@ -337,13 +337,13 @@
     ],
     "2023-09-24": [
         {
-            "date": "2023-09-24 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_1days_ratio",
             "type": "WRSIStrategy",
             "return": -0.020069152485615915
         },
         {
-            "date": "2023-09-24 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio",
             "type": "MAVStrategy",
             "return": 0.05315970622583155
@@ -351,13 +351,13 @@
     ],
     "2023-10-01": [
         {
-            "date": "2023-10-01 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": -0.01455192756310597
         },
         {
-            "date": "2023-10-01 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown",
             "type": "MAVStrategy",
             "return": -0.046185085899532186
@@ -365,13 +365,13 @@
     ],
     "2023-10-08": [
         {
-            "date": "2023-10-08 00:00:00",
+            "time": 56,
             "target": "weighted_SharpeDIY",
             "type": "WRSIStrategy",
             "return": -0.04076426294892388
         },
         {
-            "date": "2023-10-08 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "RSIV_StrategyOneday",
             "return": 0.05067505929625549
@@ -379,13 +379,13 @@
     ],
     "2023-10-15": [
         {
-            "date": "2023-10-15 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_1days_ratio",
             "type": "WRSIStrategy",
             "return": 0.03376221895044984
         },
         {
-            "date": "2023-10-15 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio",
             "type": "MAVStrategy",
             "return": 0.00277769052060739
@@ -393,13 +393,13 @@
     ],
     "2023-10-22": [
         {
-            "date": "2023-10-22 00:00:00",
+            "time": 35,
             "target": "weighted_sqn_drawdown",
             "type": "RSIV_StrategyFourhour",
             "return": 0.01138822668056827
         },
         {
-            "date": "2023-10-22 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "VWAPStrategyLong",
             "return": 0.087005787892102
@@ -407,13 +407,13 @@
     ],
     "2023-10-29": [
         {
-            "date": "2023-10-29 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "WRSIStrategy",
             "return": -0.06075507886167786
         },
         {
-            "date": "2023-10-29 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio_value",
             "type": "MAVStrategy",
             "return": 0.0
@@ -421,13 +421,13 @@
     ],
     "2023-11-05": [
         {
-            "date": "2023-11-05 00:00:00",
+            "time": 56,
             "target": "weighted_drawdown_value",
             "type": "WRSIStrategy",
             "return": 0.09336992700205426
         },
         {
-            "date": "2023-11-05 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_1days_ratio",
             "type": "WRSIStrategy",
             "return": 0.05891954272561395
@@ -435,13 +435,13 @@
     ],
     "2023-11-12": [
         {
-            "date": "2023-11-12 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown",
             "type": "VWAPStrategyLong",
             "return": 0.01393138902347979
         },
         {
-            "date": "2023-11-12 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "VWAPStrategyLong",
             "return": 0.012442001460877039
@@ -449,13 +449,13 @@
     ],
     "2023-11-19": [
         {
-            "date": "2023-11-19 00:00:00",
+            "time": 35,
             "target": "weighted_SharpeDIY",
             "type": "VWAPStrategyShort",
             "return": 0.06308413704269689
         },
         {
-            "date": "2023-11-19 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown",
             "type": "MAVStrategy",
             "return": 0.011646434706617415
@@ -463,13 +463,13 @@
     ],
     "2023-11-26": [
         {
-            "date": "2023-11-26 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.043360864297221635
         },
         {
-            "date": "2023-11-26 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.09391205409961567
@@ -477,13 +477,13 @@
     ],
     "2023-12-03": [
         {
-            "date": "2023-12-03 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_2days_ratio",
             "type": "RSIV_StrategyOneday",
             "return": 0.0018183620312623994
         },
         {
-            "date": "2023-12-03 00:00:00",
+            "time": 56,
             "target": "weighted_win_ratio",
             "type": "RSIV_StrategyOneday",
             "return": -0.08451293528162351
@@ -491,13 +491,13 @@
     ],
     "2023-12-10": [
         {
-            "date": "2023-12-10 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": 0.17970889719206262
         },
         {
-            "date": "2023-12-10 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_2days_ratio",
             "type": "RSIV_StrategyFourhour",
             "return": -0.07315602273700028
@@ -505,13 +505,13 @@
     ],
     "2023-12-17": [
         {
-            "date": "2023-12-17 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.08186040843043196
         },
         {
-            "date": "2023-12-17 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": 0.022048702868777248
@@ -519,13 +519,13 @@
     ],
     "2023-12-24": [
         {
-            "date": "2023-12-24 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": -0.13590714419642547
         },
         {
-            "date": "2023-12-24 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": -0.09448875159924153
@@ -533,13 +533,13 @@
     ],
     "2023-12-31": [
         {
-            "date": "2023-12-31 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.014162128433275578
         },
         {
-            "date": "2023-12-31 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": -0.0571765789056371
@@ -547,13 +547,13 @@
     ],
     "2024-01-07": [
         {
-            "date": "2024-01-07 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_value",
             "type": "RSIV_StrategyOneday",
             "return": -0.014812214073668617
         },
         {
-            "date": "2024-01-07 00:00:00",
+            "time": 70,
             "target": "weighted_win_ratio_value",
             "type": "RSIV_StrategyOneday",
             "return": -0.05027190938056558
@@ -561,13 +561,13 @@
     ],
     "2024-01-14": [
         {
-            "date": "2024-01-14 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.00797510386948641
         },
         {
-            "date": "2024-01-14 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "VWAPStrategyShort",
             "return": -0.10595410670773886
@@ -575,13 +575,13 @@
     ],
     "2024-01-21": [
         {
-            "date": "2024-01-21 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": 0.08566401772729026
         },
         {
-            "date": "2024-01-21 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": -0.02377060188703506
@@ -589,13 +589,13 @@
     ],
     "2024-01-28": [
         {
-            "date": "2024-01-28 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.004074396559713422
         },
         {
-            "date": "2024-01-28 00:00:00",
+            "time": 70,
             "target": "weighted_sqn_drawdown",
             "type": "VWAPStrategyShort",
             "return": -0.02707635585210988
@@ -603,13 +603,13 @@
     ],
     "2024-02-04": [
         {
-            "date": "2024-02-04 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_2days_ratio",
             "type": "WRSIStrategy",
             "return": -0.0227688939836016
         },
         {
-            "date": "2024-02-04 00:00:00",
+            "time": 70,
             "target": "weighted_value",
             "type": "WRSIStrategy",
             "return": -0.052965022025631914
@@ -617,13 +617,13 @@
     ],
     "2024-02-11": [
         {
-            "date": "2024-02-11 00:00:00",
+            "time": 35,
             "target": "weighted_profitable_3days_ratio",
             "type": "VWAPStrategyLong",
             "return": -0.0035482890942075684
         },
         {
-            "date": "2024-02-11 00:00:00",
+            "time": 56,
             "target": "weighted_sqn",
             "type": "MAVStrategy",
             "return": 0.0
@@ -631,13 +631,13 @@
     ],
     "2024-02-18": [
         {
-            "date": "2024-02-18 00:00:00",
+            "time": 56,
             "target": "weighted_drawdown_value",
             "type": "WRSIStrategy",
             "return": -0.007446650146452849
         },
         {
-            "date": "2024-02-18 00:00:00",
+            "time": 56,
             "target": "weighted_profitable_1days_ratio",
             "type": "VWAPStrategyShort",
             "return": -0.054157953422343086
@@ -645,13 +645,13 @@
     ],
     "2024-02-25": [
         {
-            "date": "2024-02-25 00:00:00",
+            "time": 35,
             "target": "weighted_SharpeDIY",
             "type": "VWAPStrategyLong",
             "return": 0.22765394507803616
         },
         {
-            "date": "2024-02-25 00:00:00",
+            "time": 56,
             "target": "weighted_win_ratio",
             "type": "VWAPStrategyShort",
             "return": 0.2139181895079898
@@ -659,13 +659,13 @@
     ],
     "2024-03-03": [
         {
-            "date": "2024-03-03 00:00:00",
+            "time": 56,
             "target": "weighted_win_ratio",
             "type": "WRSIStrategy",
             "return": 0.09783494972816431
         },
         {
-            "date": "2024-03-03 00:00:00",
+            "time": 70,
             "target": "weighted_drawdown_value",
             "type": "VWAPStrategyShort",
             "return": 0.0
@@ -673,13 +673,13 @@
     ],
     "2024-03-10": [
         {
-            "date": "2024-03-10 00:00:00",
+            "time": 35,
             "target": "weighted_win_ratio_value",
             "type": "VWAPStrategyShort",
             "return": -0.03963374861155611
         },
         {
-            "date": "2024-03-10 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_3days_ratio",
             "type": "MAVStrategy",
             "return": 0.04440512993427714
@@ -687,13 +687,13 @@
     ],
     "2024-03-17": [
         {
-            "date": "2024-03-17 00:00:00",
+            "time": 70,
             "target": "weighted_profitable_1days_ratio",
             "type": "RSIV_StrategyOneday",
             "return": -0.06484030530278251
         },
         {
-            "date": "2024-03-17 00:00:00",
+            "time": 70,
             "target": "weighted_sqn",
             "type": "VWAPStrategyLong",
             "return": -0.2763436006602269
@@ -701,13 +701,13 @@
     ],
     "2024-03-24": [
         {
-            "date": "2024-03-24 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_value",
             "type": "RSIV_StrategyFourhour",
             "return": -0.09501032676852161
         },
         {
-            "date": "2024-03-24 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": 0.12084220050675043
@@ -715,13 +715,13 @@
     ],
     "2024-03-31": [
         {
-            "date": "2024-03-31 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_value",
             "type": "RSIV_StrategyFourhour",
             "return": -0.0012177132185033912
         },
         {
-            "date": "2024-03-31 00:00:00",
+            "time": 35,
             "target": "weighted_drawdown_win_ratio_value",
             "type": "VWAPStrategyLong",
             "return": -0.05749788493277619
