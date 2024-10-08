@@ -77,7 +77,43 @@ prompt =
 # 步骤4：综合微调（SFT）
 将所有输入（市场数据、策略数据、分析、评估、理由）和输出（是否盈利）整合，进行监督微调。
 优化模型在综合信息下生成准确交易信号的能力。
-
+prompt = 
+        """
+        
+        ### 综合交易信息
+        
+        #### Instruction:
+        {instruction}
+        
+        #### 市场数据：
+        {market_analysis}
+        
+        #### 交易策略数据：
+        {strategy_signals}
+        
+        #### 关键观察：
+        1. 过去100分钟收益率为{overall_return*100:.2f}%，正收益比率为{positive_returns_ratio*100:.2f}%，价格振幅为{price_amplitude*100:.2f}%。
+        2. 市场呈现{trend_direction}趋势，{'交易' if trend_direction != '横盘' else '波动'}由{majority_or_minority}决定。
+        3. 交易量：{volume_change_direction}，交易金额加权价格相比当前价格{price_comparison}。
+        4. 市场情绪：整体市场情绪偏{market_sentiment}。
+        5. 过去7天表现：价格呈{price_trend}趋势，成交量呈{volume_trend}趋势。
+        6. 波动性：成交价格波动率{price_volatility}，成交量波动率{volume_volatility}。
+        
+        #### 市场分析和策略评估报告：
+        {market_summary}  
+        
+        #### 交易理由报告：
+        {trade_analysis}
+        
+        #### 交易信号生成：
+        基于以上所有信息，请生成一个交易信号（买入、卖出或不交易），并从{交易策略清单}选择你挑选的交易策略。
+        **交易决策：** {trade_decision}
+        **挑选策略：** {selected_strategy}
+        """
+[交易策略清单] = for key in strategy_signals.keys():
+                for sub_key in strategy_signals[key].keys():
+                        交易策略清单.append(sub_key)
+                
 # 步骤5：PPO强化学习阶段
 在这个阶段让模型自主生成市场分析，策略评估，是否交易以及交易理由。奖励模型可以有两个，一个是评估文字是否符合金融分析师标准（可以用SFT阶段的模型，或者bert或者其他小模型），一个是llm交易决策是否与真实交易结果一致。例如，文字符合标准，A=1，llm交易决策与真实交易结果一致，B=1。最终奖励为A*B。\
 定义奖励函数：根据改进建议，设计更细化和丰富的奖励函数，如奖励 = α * A + β * B。\
