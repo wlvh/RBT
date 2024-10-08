@@ -80,18 +80,18 @@ prompt =
 prompt = 
         """
         
-        ### 综合交易信息
+        # A. 综合交易信息
         
-        #### Instruction:
+        ## 1. Instruction:
         {instruction}
         
-        #### 市场数据：
+        ## 2. 市场数据：
         {market_analysis}
         
-        #### 交易策略数据：
+        ## 3. 交易策略数据：
         {strategy_signals}
         
-        #### 关键观察：
+        # B. 关键观察：
         1. 过去100分钟收益率为{overall_return*100:.2f}%，正收益比率为{positive_returns_ratio*100:.2f}%，价格振幅为{price_amplitude*100:.2f}%。
         2. 市场呈现{trend_direction}趋势，{'交易' if trend_direction != '横盘' else '波动'}由{majority_or_minority}决定。
         3. 交易量：{volume_change_direction}，交易金额加权价格相比当前价格{price_comparison}。
@@ -99,16 +99,16 @@ prompt =
         5. 过去7天表现：价格呈{price_trend}趋势，成交量呈{volume_trend}趋势。
         6. 波动性：成交价格波动率{price_volatility}，成交量波动率{volume_volatility}。
         
-        #### 市场分析和策略评估报告：
+        # C. 市场分析和策略评估报告：
         {market_summary}  
         
-        #### 交易理由报告：
+        # D. 交易理由报告：
         {trade_analysis}
         
-        #### 交易信号生成：
-        基于以上所有信息，请生成一个交易信号（买入、卖出或不交易），并从{交易策略清单}选择你挑选的交易策略。
-        **交易决策：** {trade_decision}
-        **挑选策略：** {selected_strategy}
+        # E.交易信号生成：
+        基于以上所有信息，请生成一个交易信号（买入、卖出或不交易），并从交易策略数据中列出的交易策略里挑选交易策略。
+        1. 交易决策： {trade_decision}
+        2. 挑选策略： {selected_strategy}
         """
 [交易策略清单] = for key in strategy_signals.keys():
                 for sub_key in strategy_signals[key].keys():
