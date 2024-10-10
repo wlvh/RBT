@@ -750,7 +750,7 @@ class ScoreTradingEnv(BaseTradingEnv):
             recommended_strategies['target'] = recommended_strategies['target_idx'].map(self.target_idx_to_target)
             recommended_strategies['type'] = recommended_strategies['type_idx'].map(self.type_idx_to_type)
             # 选择需要显示的列
-            display_columns = ['date', 'target', 'type', 'return']
+            display_columns = ['time', 'target', 'type', 'return']
             strategies_str = recommended_strategies[display_columns].to_string(index=False)
             # 将推荐策略保存到字典中
             if date_str not in self.saved_recommended_strategies:
